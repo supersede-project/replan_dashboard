@@ -1,0 +1,71 @@
+<link href="release-planner-app/css/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+<link href="release-planner-app/js/bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="release-planner-app/js/bootstrap-3.3.5-dist/js/bootstrap.min.js" type="text/javascript"></script>
+
+<link href="release-planner-app/css/release-planner-app.css" rel="stylesheet">
+
+<script src="release-planner-app/js/main.js"></script>
+
+<div class="well" ng-controller="main-utilities">
+   <div class="container-fluid">
+        <div class="row">
+			<!-- features -->
+            <div class="col-xs-6" ng-show="!showFeatures">
+            	<h4>{{messageFeatures}}</h4>
+            </div>
+ 			<div class="col-xs-6" ng-show="showFeatures">
+ 				<jqx-list-box id ="featureListBox" jqx-settings="featureListBoxSettings" jqx-on-select="selectItem(event)"></jqx-list-box>
+            	<div class="col-xs-7 col-xs-offset-5">
+					<div class="text-right">
+						<jqx-button type="button" class="margin-top-5px margin-bottom-5px my-button myHeight" ng-click="addFeature()"><i class="fa fa-plus fa-lg"></i> Add feature</jqx-button>
+	      		    </div>
+				</div>
+				<div class="col-xs-7 col-xs-offset-5">
+					<div class="text-right">
+						<jqx-button type="button" class="margin-bottom-5px my-button myHeight" ng-click="updateFeature()" ng-disabled="isAddFeature"><i class="fa fa-pencil fa-lg"></i> Modify feature</jqx-button>
+	      		    </div>
+				</div>
+            </div>
+
+ 				
+            <!-- releases -->
+            <div class="col-xs-6" ng-show="!showReleases">
+            	<h4>{{messageReleases}}</h4>
+            </div>
+            <div class="col-xs-6" ng-show="showReleases">
+		         <ul class="media-list">
+                   <li class="media border" ng-repeat="release in releases">   
+  		             <div class="media-body" ng-model="release" ng-click="showReleaseDetails(release)" ng-attr-id="{{'release_' + release.id}}">
+                         <h4 class="media-heading">{{release.name + '-' + release.id +  '(Id)'}}&nbsp;<small>{{release.deadline | date}}</small></h4>
+                         <p>{{release.description}}</p>
+                     </div>
+                     <div class="media-right media-middle">
+                          <a ng-click="showRelease(release)"><i class="fa fa-cog fa-3x"></i> </a>
+                     </div>
+                     <div class="media margin-top-0px">
+	                     <div class="media-body">
+	                      <div id="{{'featureDropDownId'+release.id}}"></div>
+	                     </div>
+	                     <div class="media-right">
+	                     <span id="{{'badgeId'+release.id}}" class="badge">0</span>
+	                     </div>
+                     </div>
+                   </li>
+                 </ul>
+               
+                <div class="col-xs-7 col-xs-offset-5">
+					<div class="text-right">
+						<jqx-button type="button" class="margin-bottom-5px my-button myHeight" ng-click="showRelease({})"><i class="fa fa-plus fa-lg"></i> Add release</jqx-button>
+        		    </div>
+ 				</div>
+		        <div class="col-xs-7 col-xs-offset-5">
+					<div class="text-right">
+						<jqx-button type="button" class="margin-bottom-5px my-button myHeight" ng-click="showEditProjectConfig()"><i class="fa fa-pencil fa-lg"></i> Modify project config.</jqx-button>
+        		    </div>
+                </div>
+            </div> 
+               
+        </div>
+    </div>
+</div>
