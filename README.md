@@ -7,9 +7,9 @@ The following steps describe the installation procedure for the Replan dashboard
 ### Compile instructions
 
 1. Clone the SUPERSEDE Replan Git repository.
- * `git clone https://github.com/supersede-project/replan`
-1. Build the project.
- * `cd replan_dashboard/release-planner-app/`
+ * `git clone https://github.com/supersede-project/replan_dashboard`
+2. Build the project.
+ * `cd release-planner-app/`
  * `./gradlew build`
 
 *Note: in step 2, you will need credentials to access to some of the dependencies specified in the Gradle project. Please contact with the SUPERSEDE Technical Integrator for more details: <jesus.gorronogoitia@atos.net>*
@@ -17,7 +17,7 @@ The following steps describe the installation procedure for the Replan dashboard
 ### Install instructions
 1. Copy the dashboard war file to the Tomcat directory.
  * `cp <generated WAR> <CATALINA_HOME>/webapps/release-planner-app.war`
-1. Run Tomcat. 
+2. Run Tomcat. 
  * `cd <CATALINA_HOME>/bin/`
  * `./start_up.sh`
 
