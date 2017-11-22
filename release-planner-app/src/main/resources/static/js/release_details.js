@@ -1,6 +1,7 @@
 var app = angular.module('w5app');
 app.controllerProvider.register('release-details', ['$scope', '$location', '$http', '$compile', '$rootScope',
                                    function ($scope, $location, $http,  $compile, $rootScope) {
+	
 	/*
 	 * REST methods
 	 */
@@ -60,6 +61,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		});	 
 
 	};
+	
 	$scope.forceReleasePlan = function (releaseId, force) {
 
 		var strForce = force.toString();
@@ -84,12 +86,69 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 	//contains array of feature object.
 	$scope.releaseFeatures = [];
-	
-	$scope.showTimeline_chart = true;
-	$scope.showMynetwork = true;
 
+
+	//initialize jqxSwitchButtons 
+	//https://www.jqwidgets.com/jquery-widgets-documentation/documentation/jqxbutton/jquery-button-getting-started.htm?search=button
+	$scope.showTimeline_chart = true;
+	//the default jqxSwitchButton_timeline_chart MUST BE true
+	$scope.showTimeline_chart_no_resources_available = false;
+	
+	$('#jqxSwitchButton_timeline_chart').jqxSwitchButton({ height:"20px", onLabel:'SHOW', offLabel:'HIDE', checked:true }); 
+	$('#jqxSwitchButton_timeline_chart').on('change', function (event) { 
+		$scope.showTimeline_chart = event.args.checked;
+		$rootScope.showTimeline_chart = event.args.checked; 
+		$scope.$apply();
+	});
+	
+	
+	$scope.showResource_usage = true;
+	$('#jqxSwitchButton_resources_usage').jqxSwitchButton({ height:"20px", onLabel:'SHOW', offLabel:'HIDE', checked:true }); 
+	$('#jqxSwitchButton_resources_usage').on('change', function (event) { 
+		$scope.showResource_usage = event.args.checked;
+		$rootScope.showResource_usage = event.args.checked; 
+		$scope.$apply();
+	});
+	
+	
+	$scope.showMynetwork = true;
+	//the default jqxSwitchButton_timeline_chart MUST BE true
+	$('#jqxSwitchButton_feature_dependencies').jqxSwitchButton({ height:"20px", onLabel:'SHOW', offLabel:'HIDE', checked:true }); 
+	$('#jqxSwitchButton_feature_dependencies').on('change', function (event) { 
+		$scope.showMynetwork = event.args.checked;
+		$rootScope.showMynetwork = event.args.checked; 
+		$scope.$apply();
+	});
+	$scope.showMynetwork_no_dependencies_available = false;
+
+	
+	$scope.showViewTable = true;
+	
+	$('#jqxSwitchButton_viewTable').jqxSwitchButton({ height:"20px", onLabel:'SHOW', offLabel:'HIDE', checked:true }); 
+	$('#jqxSwitchButton_viewTable').on('change', function (event) { 
+		$scope.showViewTable = event.args.checked;
+		$rootScope.showViewTable = event.args.checked; 
+		$scope.$apply();
+	});
+	
+	
+	
 	function isEven(n) {
 		return n % 2 == 0;
+	}
+	
+	function isUndefinedOrNull(obj){
+        return !angular.isDefined(obj) || obj===null;
+    }
+	//var deadLineRelease = new Date($scope.release.deadline);
+	$scope.getStringSUPERSEDEDate = function (supersedeDateAsString){
+		if(!isUndefinedOrNull(supersedeDateAsString)){
+			var res = supersedeDateAsString.split("T");
+			var dateAsString = res[0];
+			return dateAsString;
+		}
+		return "";
+		
 	}
 	//name -> y
 	//1472688000000 -> x
@@ -99,7 +158,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		.then(
 				function(response) {
 
-					//for security reassons
+					//for security reasons
 					$scope.showTimeline_chart = true;
 					$scope.showMynetwork = true;
 					
@@ -150,6 +209,31 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 											//visjs chart
 											drawFeatureDependencies();
+											
+											//show hide jqxSwitchButton
+											if(!isUndefinedOrNull($rootScope.showTimeline_chart)){
+												if(!$rootScope.showTimeline_chart){
+													$('#jqxSwitchButton_timeline_chart').jqxSwitchButton('uncheck');
+												}												
+											}
+											
+											if(!isUndefinedOrNull($rootScope.showResource_usage)){
+												if(!$rootScope.showResource_usage){
+													$('#jqxSwitchButton_resources_usage').jqxSwitchButton('uncheck');
+												}												
+											}
+
+											if(!isUndefinedOrNull($rootScope.showMynetwork)){
+												if(!$rootScope.showMynetwork){
+													$('#jqxSwitchButton_feature_dependencies').jqxSwitchButton('uncheck');
+												}												
+											}
+
+											if(!isUndefinedOrNull($rootScope.showViewTable)){
+												if(!$rootScope.showViewTable){
+													$('#jqxSwitchButton_viewTable').jqxSwitchButton('uncheck');
+												}												
+											}
 
 										},
 
@@ -605,11 +689,16 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 		
 		if(arrays.length>0){
+			
 			$scope.showTimeline_chart = true;
+			
 			//3.1 draw
 			timelineChart.draw(dataTable, options);
 		}else{
-			$scope.showTimeline_chart = false;
+		
+			$scope.showTimeline_chart_no_resources_available = true;
+			
+			
 		}
 	}
 
@@ -727,7 +816,8 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 			var network = new vis.Network(container, data, options);
 			
 		}else{
-			$scope.showMynetwork = false;
+			$scope.showMynetwork_no_dependencies_available = true;
+			
 		}
 		
 	}

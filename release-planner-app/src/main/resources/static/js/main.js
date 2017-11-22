@@ -3,6 +3,7 @@ app.controllerProvider.register('main-utilities', ['$scope', '$location', '$http
 
 
 function ($scope, $location, $http, $rootScope) {
+	
 	/*
 	 * REST methods
 	 */
@@ -124,6 +125,7 @@ function ($scope, $location, $http, $rootScope) {
 			}
 			$scope.addToRelease(event.args.value, x, y);
 		}
+		$scope.$apply();
 	});
 
 	$scope.addToRelease = function(idFeature, x, y ){
