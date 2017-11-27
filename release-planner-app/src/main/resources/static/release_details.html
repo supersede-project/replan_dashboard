@@ -21,17 +21,32 @@
        	 <h4 ng-show="showReleasePlan">{{release.name + '-' + release.id +'(Id)'}}</h4>
 	    </div>
 	    <div class="row">
-             <div class="col-xs-12" >
+	    	<!--  Over time use of resources -->
+	    	 <div class="col-xs-2">
+	    	 	<div id="jqxSwitchButton_timeline_chart" class="jqxSwitchButton_margin_top"></div>
+	     	 </div>
+             <div class="col-xs-4" >
 				<h4>Over time use of resources</h4>
-				<div id="timeline_chart" ng-show="showTimeline_chart"></div> 
-				<h5 ng-show="!showTimeline_chart">No resources are available</h5> 
+			 </div>	
+			 <div class="col-xs-6" >
+			 	<h5 ng-show="showReleasePlan" style="color:red">{{'release deadline ' + getStringSUPERSEDEDate(release.deadline)}}</h5>
+			 </div>
+			 <div class="col-xs-12" ng-show="showTimeline_chart">	
+				<div id="timeline_chart"></div>
+				<h5 ng-show="showTimeline_chart_no_resources_available">No resources are available</h5> 
              </div>
-<!--              <div class="col-xs-12" > -->
-<!--              	<h4>Feature dependencies</h4>	 -->
-<!-- 				<div id="gantt_chart" style="margin-bottom: 60px;"></div> -->
-<!--              </div> -->
-			 <div class="col-xs-12" >
+        </div>
+        <div class="row">   
+			<!--  Resources usage -->
+			<div class="col-xs-2">
+				<div id="jqxSwitchButton_resources_usage" class="jqxSwitchButton_margin_top"></div>
+			</div>
+			<div class="col-xs-10" >
 				<h4>Resources usage</h4>
+			</div>
+		</div> 
+		<div class="row"> 	
+			<div class="col-xs-8" ng-show="showResource_usage">
 				<table>
 					<tr>
 						<th>Name</th>
@@ -49,22 +64,44 @@
 					</tr>	
 				</table>
 			 </div>
-			 <div class="col-xs-12" >
-				<h4>Feature dependencies</h4>	
-				<div id="mynetwork" ng-show="showMynetwork"></div> 
-				<h5 ng-show="!showMynetwork">No dependencies are available</h5> 
-             </div>
-			 <div class="col-xs-12">
-				<h4>Table view</h4>	
+		</div>
+		 <!--  Feature dependencies -->
+		 <div class="row"> 	
+			<div class="col-xs-2">
+			 	 	<div id="jqxSwitchButton_feature_dependencies" class="jqxSwitchButton_margin_top"></div>
+				 	 </div>
+			         <div class="col-xs-10" >
+			<h4>Feature dependencies</h4>
+			</div>
+		 </div>
+		 <div class="row"> 	
+		 	<div class="col-xs-12" ng-show="showMynetwork">
+				<div id="mynetwork"></div> 
+				<h5 ng-show="showMynetwork_no_dependencies_available">No dependencies are available</h5> 
+           </div>
+        </div>
+        <!--  Table view -->
+        <div class="row">
+	        <div class="col-xs-2">
+	        	<div id="jqxSwitchButton_viewTable" class="jqxSwitchButton_margin_top"></div>
+	        </div>
+	        <div class="col-xs-10">
+	        	<h4>Table view</h4>	
+	        </div>
+        </div> 
+        <div class="row"> 
+			<div class="col-xs-12" ng-show="showViewTable" >
 				<jqx-grid id="featuresJqxgrid" jqx-create="blncreateFeaturesJqxgrid" jqx-settings="featuresJqxgridSettings"></jqx-grid>
-			 </div>     
-	     	 <div class="col-xs-12 margin-bottom-5px margin-top-5px">
+			</div>
+		 </div>
+		 <div class="row">      
+			<div class="col-xs-12 margin-bottom-5px margin-top-5px">
 			     <div class="text-right" ng-show="showReleasePlan">
 			     	<jqx-button id="acceptJqxButton" type="submit" class="my-button margin-left-5px" ng-click="accept()">Accept</jqx-button>
 			     	<jqx-button id="forceTOReplanJqxButton" type="submit" class="my-button margin-left-5px" ng-click="forceTOReplan(true)">Force replan</jqx-button>
 			     	<jqx-button id="previousPlanButton" type="submit" class="my-button margin-left-5px" ng-click="forceTOReplan(false)">Previous plan</jqx-button>
 			    </div>  
 			</div>
-        </div>
+		</div>
 	</div>
 </div>
