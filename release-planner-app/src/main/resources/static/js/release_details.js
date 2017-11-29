@@ -140,6 +140,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	function isUndefinedOrNull(obj){
         return !angular.isDefined(obj) || obj===null;
     }
+	
 	//var deadLineRelease = new Date($scope.release.deadline);
 	$scope.getStringSUPERSEDEDate = function (supersedeDateAsString){
 		if(!isUndefinedOrNull(supersedeDateAsString)){
