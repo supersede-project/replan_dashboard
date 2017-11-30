@@ -82,19 +82,20 @@ function ($scope, $location, $http, $rootScope) {
 					var table1 = '<table id=' + idTable +' style="color: inherit; font-size: inherit; font-style: inherit;">'
 									+'<tr>'
 										+'<td style="width: 35px;" rowspan="3">' + glyphicon + '</td>'
-										+'<td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:1px;"><b>' + labelTruncate + '</b></td>'
-									+'</tr>'
+										+'<td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:1px;"><b>' + labelTruncate + '</b></td>';
+					var table2 ='<td></td>';
+					
+					if(!isUndefinedOrNull(datarecord.jira_url)){
+					
+						table2 = '<td><a href=\"' + datarecord.jira_url +'\" target="_blank"><img src="release-planner-app/images/icon-jira-logo.png" alt="Supersede JIRA"></a></td>'
+					}
+										
+										
+					var table3 ='</tr>'
 									+'<tr>'
 										+'<td>Id:'+ datarecord.id +' Effort: '+ datarecord.effort +' Priority:'+ datarecord.priority + '</td>'
-									+'</tr>';
-					var table2 ='';				
-					if(!isUndefinedOrNull(datarecord.jira_url)){
-						
-						table2 = '<tr>'
-									+'<td><a href=\"' + datarecord.jira_url +'\" target="_blank"><img src="release-planner-app/images/icon-jira-logo.png" alt="Supersede JIRA"></a></td>'
-								+'</tr>';	
-					}
-					var table3='</table>';
+									+'</tr>'
+								+'</table>';
 									
 								
 					var table = table1 + table2 + table3;			
