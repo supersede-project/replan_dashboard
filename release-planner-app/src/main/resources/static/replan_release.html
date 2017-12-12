@@ -81,10 +81,12 @@
 				  
 				    <div class="form-group margin-bottom-5px" >
 				      <div class="col-sm-offset-2 col-sm-10">
-				        <jqx-button type="submit" class="margin-bottom-5px my-button myHeight" ng-disabled="featureForm.$invalid">Re-Plan Next Release</jqx-button>
+				      	<div class="text-right">
+				      		<jqx-button type="reset" class="my-button" ng-click="cancel()">Cancel</jqx-button>
+				        	<jqx-button type="submit" class="margin-bottom-5px my-button myHeight" ng-disabled="featureForm.$invalid">Re-Plan Next Release</jqx-button>
+				    	</div>
 				      </div>
 				    </div>
-			  	
 			  	</form>
 	        </div>
         </div>

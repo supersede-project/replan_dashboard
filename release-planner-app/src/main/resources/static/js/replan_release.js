@@ -713,7 +713,11 @@ app.controllerProvider.register('replan-release', ['$scope', '$location', '$http
 	}
 	
 
-
+	//cancel button Project
+	$scope.cancel = function(){
+		$location.path("/release-planner-app/main");
+	};
+	
 	/**
 	 * start point method
 	 */
@@ -732,7 +736,7 @@ app.controllerProvider.register('replan-release', ['$scope', '$location', '$http
 							}
 							
 							//JIRA URL
-							$('#jiraUrl').jqxInput({disabled: true });
+							//$('#jiraUrl').jqxInput({disabled: true });
 							//data input
 							$("#dateInputDeadline").jqxDateTimeInput({ width: '100%', height: '25px', formatString: 'yyyy-MM-dd'/*, min: new Date(year, month, day)*/});
 							$('#dateInputDeadline').jqxDateTimeInput('setDate', new Date($scope.feature.deadline));

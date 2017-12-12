@@ -1,7 +1,6 @@
 var app = angular.module('w5app');
 app.controllerProvider.register('add-update-feature', ['$scope', '$location', '$http', 
                                       function ($scope, $location, $http) {
-
 	/*
 	 * REST methods
 	 */
@@ -216,7 +215,11 @@ app.controllerProvider.register('add-update-feature', ['$scope', '$location', '$
 		}
 	}
 
-
+	//cancel button Project
+	$scope.cancel = function(){
+		$location.path("/release-planner-app/main");
+	};
+	
 	/**
 	 * start point method
 	 */
