@@ -140,6 +140,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	function isUndefinedOrNull(obj){
         return !angular.isDefined(obj) || obj===null;
     }
+	
 	//var deadLineRelease = new Date($scope.release.deadline);
 	$scope.getStringSUPERSEDEDate = function (supersedeDateAsString){
 		if(!isUndefinedOrNull(supersedeDateAsString)){
@@ -273,7 +274,10 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		var timeAsStrings = timeAsString.split(":");
 		var hours = timeAsStrings[0];
 		var minutes = timeAsStrings[1];
-		var startDate = new Date(parseInt(year),parseInt(mounth),parseInt(day),parseInt(hours),parseInt(minutes));
+		//year, month, day, hour, minute, second, and millisecond,
+		//mounth
+		var mounth2 = mounth-1;
+		var startDate = new Date(parseInt(year),parseInt(mounth2),parseInt(day),parseInt(hours),parseInt(minutes));
 		return startDate;
 	}
 

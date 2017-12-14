@@ -14,11 +14,21 @@
 	            <h4>{{messageFeature}}</h4>
 	        </div>
 	    </div>
-        <div class="row" ng-show="showFeature">
-        	<h4>{{feature.name + '-' + feature.id +'(Id)'}}</h4>
-	 		<div class="col-xs-12">
+	    <div class="row" ng-show="showFeature">
+        	<div class="col-xs-12">
+        		<h4 class="col-xs-12">{{feature.name + '-' + feature.id +'(Id)'}}</h4>
 				<form id="featureForm" name="featureForm" class="form-horizontal" ng-submit="replanRelease()" novalidate>
 					
+					<div class="form-group margin-bottom-5px">
+				      <label class="control-label col-sm-2 my-label" for="jiraURL">JIRA URL:</label>
+				      <div class="col-sm-9">
+				        <jqx-input id="jiraUrl" name="jiraURL" class="form-control myHeightSmall" ng-model="feature.jira_url"></jqx-input>
+				      </div>
+				      <div class="col-sm-1">
+				        <a  ng-href="{{feature.jira_url}}" target="_blank"><img src="release-planner-app/images/icon-jira-logo.png" alt="Supersede JIRA"></a>
+				      </div>
+				    </div>
+				    
 					<div class="form-group margin-bottom-5px">
 				      <label class="control-label col-sm-2 my-label" for="description">Description:</label>
 				      <div class="col-sm-10">
@@ -71,10 +81,12 @@
 				  
 				    <div class="form-group margin-bottom-5px" >
 				      <div class="col-sm-offset-2 col-sm-10">
-				        <jqx-button type="submit" class="margin-bottom-5px my-button myHeight" ng-disabled="featureForm.$invalid">Re-Plan Next Release</jqx-button>
+				      	<div class="text-right">
+				      		<jqx-button type="reset" class="my-button" ng-click="cancel()">Cancel</jqx-button>
+				        	<jqx-button type="submit" class="margin-bottom-5px my-button myHeight" ng-disabled="featureForm.$invalid">Re-Plan Next Release</jqx-button>
+				    	</div>
 				      </div>
 				    </div>
-			  	
 			  	</form>
 	        </div>
         </div>
