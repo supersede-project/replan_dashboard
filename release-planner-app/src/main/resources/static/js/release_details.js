@@ -178,11 +178,13 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 											var responseData = response.data;
 											$scope.plan = responseData;
 											
-											//add my_requiredSkills in feature
+											//add my_requiredSkills
+											//add my_requiredSkillsOnlyIds in feature
 											for(var i = 0; i<$scope.plan.jobs.length; ++i){ 
 												var job = $scope.plan.jobs[i];
 												
 												var requiredSkills = '';
+												var my_requiredSkillsOnlyIds = '';
 												for(var z = 0; z<$scope.releaseFeatures.length; ++z){
 													
 													var feature = $scope.releaseFeatures[z];
@@ -190,15 +192,18 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 														
 														for(var c = 0; c< feature.required_skills.length; ++c){
 															if(c==0){
-																requiredSkills =  feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";							
+																requiredSkills =  feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+																my_requiredSkillsOnlyIds = feature.required_skills[c].id;
 															}
 															else{
-																requiredSkills = requiredSkills +"," + requiredSkills + feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+																requiredSkills = requiredSkills + "," + requiredSkills + feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+																my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds +  "," + feature.required_skills[c].id;
 															}
 														}
 													}
 												}
 												job.feature.my_requiredSkills = requiredSkills;
+												job.feature.my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds;
 											}
 											
 											//add % of resource usage
@@ -350,25 +355,31 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				job.ends = null;
 				job.feature = $scope.releaseFeatures[i];
 				
-				//add my_requiredSkills
+				//add my_requiredSkillsOnlyIds
+				var my_requiredSkillsOnlyIds = '';
 				var requiredSkills = '';
-				for(var z = 0; z<$scope.releaseFeatures.length; ++z){
+				//for(var z = 0; z<$scope.releaseFeatures.length; ++z){
 					
-					var feature = $scope.releaseFeatures[z];
-					if($scope.releaseFeatures[i].id == feature.id){
-						
+					var feature = $scope.releaseFeatures[i];
+					//if($scope.releaseFeatures[i].id == feature.id){
+						//var a;
+						//if(feature.id==3){
+							//a=3;
+						//}
 						for(var c = 0; c< feature.required_skills.length; ++c){
 							if(c==0){
-								requiredSkills = requiredSkills + feature.required_skills[c].id;							
+								requiredSkills =  feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+								my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds + feature.required_skills[c].id;							
 							}
 							else{
-								requiredSkills = requiredSkills +"," + requiredSkills + feature.required_skills[c].id;
+								requiredSkills = requiredSkills + "," + feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+								my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds +","  + feature.required_skills[c].id;
 							}
-	
 						}
-					}
-				}
+					//}
+				//}
 				job.feature.my_requiredSkills = requiredSkills;
+				job.feature.my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds;
 				
 				job.resource = null;
 				
@@ -429,7 +440,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				             { name: 'my_starts', type: 'string'},
 				             { name: 'my_ends', type: 'string' },
 				             { name: 'my_dependencies', type: 'string' },
-				             { name: 'my_requiredSkills', map : 'feature>my_requiredSkills', type: 'string' },
+				             { name: 'my_requiredSkillsOnlyIds', map : 'feature>my_requiredSkillsOnlyIds', type: 'string' },
 				             ],
 				             id: 'id',
 				             localdata: $scope.planJqxgrid.jobs
@@ -477,7 +488,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				          { text: 'Start', datafield: 'my_starts', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
 				          { text: 'End', datafield: 'my_ends', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
 				          { text: 'Dependencies', datafield: 'my_dependencies' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
-				          { text: 'Required skills', datafield: 'my_requiredSkills' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Required skills', datafield: 'my_requiredSkillsOnlyIds' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
 				          { text: '', columntype: 'button', cellclassname: cellclass, width: '10%',
 				        	  cellsrenderer: function () {
 				        		  return "Remove";
