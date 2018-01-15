@@ -64,6 +64,10 @@ app.controllerProvider.register('project-utilities', ['$scope', '$location', '$h
 		});
 	};
 	
+	
+		//POST http://supersede.es.atos.net:8280/replan/projects/siemens/resources/2/skills
+		//[{"skill_id": 2},{"skill_id": 3}]
+
 	$scope.addSkillsToResource = function(resource, arraySkillIds){
 
 		//create data OBj like {"_json": [{"skill_id": 3}]}
@@ -85,6 +89,31 @@ app.controllerProvider.register('project-utilities', ['$scope', '$location', '$h
 		});	
 	
 	};
+	
+	
+	$scope.deleteSkillsToResource = function(resource){
+		
+		var skillIds="skillId";
+		var skills = resource.skills;
+		for(var i = 0 ; i< skills.length; i++){
+			if(i==0){
+				skillIds = skillIds + "=" + skills[i].id;
+			}else{
+				skillIds = skillIds +","+skills[i].id;
+			}
+		}
+		return $http({
+			method: 'DELETE',
+			url: baseURL +'/resources/' + resource.id + '/skills?'+skillIds,
+			headers: {"Content-Type": "application/json;charset=UTF-8"}
+		});	 
+		
+	}
+	
+	//delete_skills_from_resource:
+	//DELETE http://supersede.es.atos.net:8280/replan/projects/siemens/resources/2/skills?skillId=2,3
+	
+	
 	
 	$scope.removeSkillFromProject = function (skill){
 
@@ -458,45 +487,81 @@ app.controllerProvider.register('project-utilities', ['$scope', '$location', '$h
 		    .then(
 		        function(response) {
 		        	
-		        	//remove all skills
-		        	$scope.deleteSkillsToResource($scope.resource)
-				    .then(
-				        function(response) {
-				          	$scope.addSkillsToResource(response.data, arraySkillIds)
-						    .then(
-						        function(response) {
-						       
-						         	//update the table
-						        	$scope.getProject()
-						        	.then(
-						        			function(response) {
-						        				$scope.showProject = true;
-						        				$scope.initResourcesTable(response);
-						        				$scope.showAddUpdateResouceForm = false;
-						        			},
+		        	if($scope.resource.skills.length>0){
+		        		//remove all skills
+			        	$scope.deleteSkillsToResource($scope.resource)
+					    .then(
+					        function(response) {
+					        	//add skills
+					          	$scope.addSkillsToResource(response.data, arraySkillIds)
+							    .then(
+							        function(response) {
+							       
+							         	//update the table
+							        	$scope.getProject()
+							        	.then(
+							        			function(response) {
+							        				$scope.showProject = true;
+							        				$scope.initResourcesTable(response);
+							        				$scope.showAddUpdateResouceForm = false;
+							        			},
 
-						        			function(response) {
-						        				$scope.showProject = false;
-						        				$scope.messageProject = "Error: "+response.status + " " + response.statusText;	
-						        			}
-						        	);
-						        	
-						        },
-						        
-						        function(response) {
-						        	$scope.showProject = false;
-						            $scope.messageProject = "Error: "+response.status + " " + response.statusText;
-						        }
-						    );
-				        
-				        	
-				        },
-				        
-				        function(response) {
-				        	$scope.showProject = false;
-				            $scope.messageProject = "Error: "+response.status + " " + response.statusText;
-				        }
-				    );	
+							        			function(response) {
+							        				$scope.showProject = false;
+							        				$scope.messageProject = "Error: "+response.status + " " + response.statusText;	
+							        			}
+							        	);
+							        	
+							        },
+							        
+							        function(response) {
+							        	$scope.showProject = false;
+							            $scope.messageProject = "Error: "+response.status + " " + response.statusText;
+							        }
+							    );
+					        
+					        	
+					        },
+					        
+					        function(response) {
+					        	$scope.showProject = false;
+					            $scope.messageProject = "Error: "+response.status + " " + response.statusText;
+					        }
+					    );	
+		        	}
+		        	else{
+		        	  	//add skills
+			          	$scope.addSkillsToResource(response.data, arraySkillIds)
+					    .then(
+					        function(response) {
+					       
+					         	//update the table
+					        	$scope.getProject()
+					        	.then(
+					        			function(response) {
+					        				$scope.showProject = true;
+					        				$scope.initResourcesTable(response);
+					        				$scope.showAddUpdateResouceForm = false;
+					        			},
+
+					        			function(response) {
+					        				$scope.showProject = false;
+					        				$scope.messageProject = "Error: "+response.status + " " + response.statusText;	
+					        			}
+					        	);
+					        	
+					        },
+					        
+					        function(response) {
+					        	$scope.showProject = false;
+					            $scope.messageProject = "Error: "+response.status + " " + response.statusText;
+					        }
+					    );
+		        	}
+		        	
+		        	
+		        	
+		        
 		        },
 		        
 		        function(response) {
