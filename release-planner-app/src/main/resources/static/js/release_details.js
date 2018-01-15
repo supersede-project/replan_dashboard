@@ -178,10 +178,10 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 											var responseData = response.data;
 											$scope.plan = responseData;
 											
-											
+											//add my_requiredSkills in feature
 											for(var i = 0; i<$scope.plan.jobs.length; ++i){ 
 												var job = $scope.plan.jobs[i];
-												//add my_requiredSkills in feature
+												
 												var requiredSkills = '';
 												for(var z = 0; z<$scope.releaseFeatures.length; ++z){
 													
@@ -195,7 +195,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 															else{
 																requiredSkills = requiredSkills +"," + requiredSkills + feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
 															}
-
 														}
 													}
 												}
@@ -226,12 +225,14 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 									
 											$scope.showReleasePlan = true;
 
+											//google charts
+											google.charts.setOnLoadCallback(drawTimelineChart);
+
+											//prepare the data for Jqxgrid and visjs chart
 											$scope.planJqxgrid = JSON.parse(JSON.stringify(responseData)); 
 											addPropertiesTOPlanJqxgrid();
 											$scope.initFeaturesJqxgrid();
 
-											//google charts
-											google.charts.setOnLoadCallback(drawTimelineChart);
 
 											//visjs chart
 											drawFeatureDependencies();
@@ -310,26 +311,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 		for(var i = 0; i<$scope.planJqxgrid.jobs.length; ++i){ 
 			var job = $scope.planJqxgrid.jobs[i];
-			//add my_requiredSkills
-			var requiredSkills = '';
-			for(var z = 0; z<$scope.releaseFeatures.length; ++z){
-				
-				var feature = $scope.releaseFeatures[z];
-				if($scope.planJqxgrid.jobs[i].feature.id == feature.id){
-					
-					for(var c = 0; c< feature.required_skills.length; ++c){
-						if(c==0){
-							requiredSkills = requiredSkills + feature.required_skills[c].id;							
-						}
-						else{
-							requiredSkills = requiredSkills +"," + requiredSkills + feature.required_skills[c].id;
-						}
-
-					}
-				}
-			}
-			job.my_requiredSkills = requiredSkills;
-
 			//add my_dependencies to plan
 			var dependencies = '';
 			for(var j = 0; j<$scope.planJqxgrid.jobs[i].depends_on.length; ++j){
@@ -340,7 +321,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				else{
 					dependencies = dependencies +','+ $scope.planJqxgrid.jobs[i].depends_on[j].feature_id;
 				}
-				
 			}
 			
 			job.my_dependencies = dependencies;
@@ -369,6 +349,27 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				job.starts = null;
 				job.ends = null;
 				job.feature = $scope.releaseFeatures[i];
+				
+				//add my_requiredSkills
+				var requiredSkills = '';
+				for(var z = 0; z<$scope.releaseFeatures.length; ++z){
+					
+					var feature = $scope.releaseFeatures[z];
+					if($scope.releaseFeatures[i].id == feature.id){
+						
+						for(var c = 0; c< feature.required_skills.length; ++c){
+							if(c==0){
+								requiredSkills = requiredSkills + feature.required_skills[c].id;							
+							}
+							else{
+								requiredSkills = requiredSkills +"," + requiredSkills + feature.required_skills[c].id;
+							}
+	
+						}
+					}
+				}
+				job.feature.my_requiredSkills = requiredSkills;
+				
 				job.resource = null;
 				
 				//add my_dependencies to plan
@@ -428,7 +429,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				             { name: 'my_starts', type: 'string'},
 				             { name: 'my_ends', type: 'string' },
 				             { name: 'my_dependencies', type: 'string' },
-				             { name: 'my_requiredSkills', type: 'string' },
+				             { name: 'my_requiredSkills', map : 'feature>my_requiredSkills', type: 'string' },
 				             ],
 				             id: 'id',
 				             localdata: $scope.planJqxgrid.jobs
@@ -469,15 +470,15 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				enablehover: true,
 				columns: [
 				          //width: 40 
-				          { text: 'Id', datafield: 'id', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 40},
-				          { text: 'Name', datafield: 'name', rendered: tooltipHeaderRenderer, cellclassname: cellclass},
-				          { text: 'Effort', datafield: 'effort', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 40},
-				          { text: 'Priority', datafield: 'priority', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 40 },
-				          { text: 'Start', datafield: 'my_starts', rendered: tooltipHeaderRenderer, cellclassname: cellclass},
-				          { text: 'End', datafield: 'my_ends', rendered: tooltipHeaderRenderer, cellclassname: cellclass},
-				          { text: 'Dependencies', datafield: 'my_dependencies' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 60},
-				          { text: 'Required skills', datafield: 'my_requiredSkills' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 60},
-				          { text: '', columntype: 'button', cellclassname: cellclass, width: 60,
+				          { text: 'Id', datafield: 'id', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Name', datafield: 'name', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Effort', datafield: 'effort', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Priority', datafield: 'priority', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%' },
+				          { text: 'Start', datafield: 'my_starts', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'End', datafield: 'my_ends', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Dependencies', datafield: 'my_dependencies' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Required skills', datafield: 'my_requiredSkills' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: '', columntype: 'button', cellclassname: cellclass, width: '10%',
 				        	  cellsrenderer: function () {
 				        		  return "Remove";
 				        	  },
@@ -507,7 +508,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 				        	  }
 				          },
-				          { text: '', datafield: 'Edit', columntype: 'button', cellclassname: cellclass, width: 60, 
+				          { text: '', datafield: 'Edit', columntype: 'button', cellclassname: cellclass, width: '10%',
 				        	  cellsrenderer: function () {
 				        		  return "Edit";
 				        	  },
