@@ -440,7 +440,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				             { name: 'my_starts', type: 'string'},
 				             { name: 'my_ends', type: 'string' },
 				             { name: 'my_dependencies', type: 'string' },
-				             { name: 'my_requiredSkillsOnlyIds', map : 'feature>my_requiredSkillsOnlyIds', type: 'string' },
+				             { name: 'my_requiredSkills', map : 'feature>my_requiredSkills', type: 'string' },
 				             ],
 				             id: 'id',
 				             localdata: $scope.planJqxgrid.jobs
@@ -488,7 +488,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				          { text: 'Start', datafield: 'my_starts', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
 				          { text: 'End', datafield: 'my_ends', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
 				          { text: 'Dependencies', datafield: 'my_dependencies' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
-				          { text: 'Required skills', datafield: 'my_requiredSkillsOnlyIds' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Required skills', datafield: 'my_requiredSkills' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
 				          { text: '', columntype: 'button', cellclassname: cellclass, width: '10%',
 				        	  cellsrenderer: function () {
 				        		  return "Remove";
@@ -686,14 +686,32 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		}
 				
 		var depends_on = "";
-		for(var z=0; z<job.depends_on.length; z++){
-			if(z==0){
-				depends_on = findIdFeatureFromJobId(job.depends_on[z].id);	
-			}else{
-				depends_on = depends_on + ", " + findIdFeatureFromJobId(job.depends_on[z].id);
-			}
-
+		if(job.feature.id==4){
+			//alert("job.feature.id " + job.feature.id)
+			//$scope.releaseFeatures
 		}
+		for(var z=0; z<$scope.releaseFeatures.length; z++){
+			if($scope.releaseFeatures[z].id==job.feature.id){
+				
+				
+				for(var c=0; c<$scope.releaseFeatures[z].depends_on.length; c++){
+					if(c==0){
+						depends_on = $scope.releaseFeatures[z].depends_on[c].name + "-" + $scope.releaseFeatures[z].depends_on[c].id + "(Id)";
+					}
+					else{
+						depends_on = depends_on + ", " + $scope.releaseFeatures[z].depends_on[c].name + "-" + $scope.releaseFeatures[z].depends_on[c].id + "(Id)";
+					}
+				}
+			}
+		}
+//		for(var z=0; z<job.depends_on.length; z++){
+//			if(z==0){
+//				depends_on = findIdFeatureFromJobId(job.depends_on[z].id);	
+//			}else{
+//				depends_on = depends_on + ", " + findIdFeatureFromJobId(job.depends_on[z].id);
+//			}
+//
+//		}
 		//tooltip
 		var result = "<div>" +
 		"<table class='tooltip_table'>" +
@@ -935,7 +953,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 	function findIdFeatureFromJobId(jobId) {
 		var jobs = $scope.plan.jobs;
-
 		//for(var i = jobs.length-1; i>=0; i--){
 		for(var i = 0; i< jobs.length; i++){
 			var job = jobs[i];
@@ -945,6 +962,10 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		}
 		return -1;
 	}
+	
+	
+	
+	
 
 	function getDateASString(dateAsString) {
 		var res = dateAsString.split("T");
