@@ -94,7 +94,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	//the default jqxSwitchButton_timeline_chart MUST BE true
 	$scope.showTimeline_chart_no_resources_available = false;
 	
-	$('#jqxSwitchButton_timeline_chart').jqxSwitchButton({ height:"20px", onLabel:'SHOW', offLabel:'HIDE', checked:true }); 
+	$('#jqxSwitchButton_timeline_chart').jqxSwitchButton({ height:"20px", onLabel:'HIDE', offLabel:'SHOW', checked:true }); 
 	$('#jqxSwitchButton_timeline_chart').on('change', function (event) { 
 		$scope.showTimeline_chart = event.args.checked;
 		$rootScope.showTimeline_chart = event.args.checked; 
@@ -103,7 +103,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	
 	
 	$scope.showResource_usage = true;
-	$('#jqxSwitchButton_resources_usage').jqxSwitchButton({ height:"20px", onLabel:'SHOW', offLabel:'HIDE', checked:true }); 
+	$('#jqxSwitchButton_resources_usage').jqxSwitchButton({ height:"20px", onLabel:'HIDE', offLabel:'SHOW', checked:true }); 
 	$('#jqxSwitchButton_resources_usage').on('change', function (event) { 
 		$scope.showResource_usage = event.args.checked;
 		$rootScope.showResource_usage = event.args.checked; 
@@ -113,7 +113,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	
 	$scope.showMynetwork = true;
 	//the default jqxSwitchButton_timeline_chart MUST BE true
-	$('#jqxSwitchButton_feature_dependencies').jqxSwitchButton({ height:"20px", onLabel:'SHOW', offLabel:'HIDE', checked:true }); 
+	$('#jqxSwitchButton_feature_dependencies').jqxSwitchButton({ height:"20px", onLabel:'HIDE', offLabel:'SHOW', checked:true }); 
 	$('#jqxSwitchButton_feature_dependencies').on('change', function (event) { 
 		$scope.showMynetwork = event.args.checked;
 		$rootScope.showMynetwork = event.args.checked; 
@@ -124,7 +124,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	
 	$scope.showViewTable = true;
 	
-	$('#jqxSwitchButton_viewTable').jqxSwitchButton({ height:"20px", onLabel:'SHOW', offLabel:'HIDE', checked:true }); 
+	$('#jqxSwitchButton_viewTable').jqxSwitchButton({ height:"20px", onLabel:'HIDE', offLabel:'SHOW', checked:true }); 
 	$('#jqxSwitchButton_viewTable').on('change', function (event) { 
 		$scope.showViewTable = event.args.checked;
 		$rootScope.showViewTable = event.args.checked; 
@@ -177,6 +177,35 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 											var responseData = response.data;
 											$scope.plan = responseData;
+											
+											//add my_requiredSkills
+											//add my_requiredSkillsOnlyIds in feature
+											for(var i = 0; i<$scope.plan.jobs.length; ++i){ 
+												var job = $scope.plan.jobs[i];
+												
+												var requiredSkills = '';
+												var my_requiredSkillsOnlyIds = '';
+												for(var z = 0; z<$scope.releaseFeatures.length; ++z){
+													
+													var feature = $scope.releaseFeatures[z];
+													if($scope.plan.jobs[i].feature.id == feature.id){
+														
+														for(var c = 0; c< feature.required_skills.length; ++c){
+															if(c==0){
+																requiredSkills =  feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+																my_requiredSkillsOnlyIds = feature.required_skills[c].id;
+															}
+															else{
+																requiredSkills = requiredSkills + "," + requiredSkills + feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+																my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds +  "," + feature.required_skills[c].id;
+															}
+														}
+													}
+												}
+												job.feature.my_requiredSkills = requiredSkills;
+												job.feature.my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds;
+											}
+											
 											//add % of resource usage
 											for(var i = 0; i< $scope.plan.resource_usage.length; i++){
 												var resource = $scope.plan.resource_usage[i];
@@ -190,10 +219,10 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 												for(var j = 0; j< resource.skills.length; j++){
 													var skill = resource.skills[j];
 													if(j==0){
-														skillsAsString = skillsAsString + skill.name; 
+														skillsAsString =  skill.name + "-" + skill.id +"(Id)"; 
 													}
 													else{
-														skillsAsString = skillsAsString + "," + skill.name; 
+														skillsAsString = skillsAsString + "," + skill.name + "-" + skill.id +"(Id)"; 
 													}
 												}
 												resource.skillsAsString = skillsAsString;
@@ -201,12 +230,14 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 									
 											$scope.showReleasePlan = true;
 
+											//google charts
+											google.charts.setOnLoadCallback(drawTimelineChart);
+
+											//prepare the data for Jqxgrid and visjs chart
 											$scope.planJqxgrid = JSON.parse(JSON.stringify(responseData)); 
 											addPropertiesTOPlanJqxgrid();
 											$scope.initFeaturesJqxgrid();
 
-											//google charts
-											google.charts.setOnLoadCallback(drawTimelineChart);
 
 											//visjs chart
 											drawFeatureDependencies();
@@ -284,10 +315,11 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	function addPropertiesTOPlanJqxgrid() {
 
 		for(var i = 0; i<$scope.planJqxgrid.jobs.length; ++i){ 
+			var job = $scope.planJqxgrid.jobs[i];
 			//add my_dependencies to plan
 			var dependencies = '';
-
 			for(var j = 0; j<$scope.planJqxgrid.jobs[i].depends_on.length; ++j){
+				
 				if(j==0){
 					dependencies = dependencies + $scope.planJqxgrid.jobs[i].depends_on[j].feature_id;
 				}
@@ -295,9 +327,8 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 					dependencies = dependencies +','+ $scope.planJqxgrid.jobs[i].depends_on[j].feature_id;
 				}
 			}
-			var job = $scope.planJqxgrid.jobs[i];
+			
 			job.my_dependencies = dependencies;
-
 
 			//add my_starts
 			var res = $scope.planJqxgrid.jobs[i].starts.split("T");
@@ -317,17 +348,67 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		for(var i = 0; i<$scope.releaseFeatures.length; ++i){
 			//if false -> add
 			if(!is_in_scheduled_jobs($scope.releaseFeatures[i].id)){
+				
 				var job = {};
 				job.id = null;
 				job.starts = null;
 				job.ends = null;
 				job.feature = $scope.releaseFeatures[i];
+				
+				//add my_requiredSkillsOnlyIds
+				var my_requiredSkillsOnlyIds = '';
+				var requiredSkills = '';
+				//for(var z = 0; z<$scope.releaseFeatures.length; ++z){
+					
+					var feature = $scope.releaseFeatures[i];
+					//if($scope.releaseFeatures[i].id == feature.id){
+						//var a;
+						//if(feature.id==3){
+							//a=3;
+						//}
+						for(var c = 0; c< feature.required_skills.length; ++c){
+							if(c==0){
+								requiredSkills =  feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+								my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds + feature.required_skills[c].id;							
+							}
+							else{
+								requiredSkills = requiredSkills + "," + feature.required_skills[c].name + "-" + feature.required_skills[c].id +"(Id)";
+								my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds +","  + feature.required_skills[c].id;
+							}
+						}
+					//}
+				//}
+				job.feature.my_requiredSkills = requiredSkills;
+				job.feature.my_requiredSkillsOnlyIds = my_requiredSkillsOnlyIds;
+				
 				job.resource = null;
-				job.my_dependencies = '';
+				
+				//add my_dependencies to plan
+				var dependencies = '';
+				var depends_on = [];
+				for(var j = 0; j<$scope.releaseFeatures[i].depends_on.length; ++j){
+					var objDependency = {};
+					if(j==0){
+						dependencies = dependencies +$scope.releaseFeatures[i].depends_on[j].id;
+					}
+					else{
+						dependencies = dependencies +','+ $scope.releaseFeatures[i].depends_on[j].id;
+					}
+					objDependency.id = null;
+					objDependency.starts = null;
+					objDependency.ends = null;
+					objDependency.feature_id = $scope.releaseFeatures[i].depends_on[j].id;
+					objDependency.resource_id = null;
+					depends_on.push(objDependency);
+				}
+				
+				
+				job.depends_on = depends_on;
+				job.my_dependencies = dependencies;
 				job.my_starts = '';
 				job.my_ends = '';
 				job.my_scheduled = false;
-
+				
 				$scope.planJqxgrid.jobs.push(job);
 			}
 		}
@@ -358,7 +439,8 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				             { name: 'priority', map : 'feature>priority', type: 'number'},
 				             { name: 'my_starts', type: 'string'},
 				             { name: 'my_ends', type: 'string' },
-				             { name: 'my_dependencies', type: 'string' }
+				             { name: 'my_dependencies', type: 'string' },
+				             { name: 'my_requiredSkills', map : 'feature>my_requiredSkills', type: 'string' },
 				             ],
 				             id: 'id',
 				             localdata: $scope.planJqxgrid.jobs
@@ -399,14 +481,15 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				enablehover: true,
 				columns: [
 				          //width: 40 
-				          { text: 'Id', datafield: 'id', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 40},
-				          { text: 'Name', datafield: 'name', rendered: tooltipHeaderRenderer, cellclassname: cellclass},
-				          { text: 'Effort', datafield: 'effort', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 40},
-				          { text: 'Priority', datafield: 'priority', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 40 },
-				          { text: 'Start', datafield: 'my_starts', rendered: tooltipHeaderRenderer, cellclassname: cellclass},
-				          { text: 'End', datafield: 'my_ends', rendered: tooltipHeaderRenderer, cellclassname: cellclass},
-				          { text: 'Dependencies', datafield: 'my_dependencies' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: 60},
-				          { text: '', columntype: 'button', cellclassname: cellclass, width: 60,
+				          { text: 'Id', datafield: 'id', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Name', datafield: 'name', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Effort', datafield: 'effort', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Priority', datafield: 'priority', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%' },
+				          { text: 'Start', datafield: 'my_starts', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'End', datafield: 'my_ends', rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Dependencies', datafield: 'my_dependencies' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: 'Required skills', datafield: 'my_requiredSkills' , rendered: tooltipHeaderRenderer, cellclassname: cellclass, width: '10%'},
+				          { text: '', columntype: 'button', cellclassname: cellclass, width: '10%',
 				        	  cellsrenderer: function () {
 				        		  return "Remove";
 				        	  },
@@ -436,7 +519,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 				        	  }
 				          },
-				          { text: '', datafield: 'Edit', columntype: 'button', cellclassname: cellclass, width: 60, 
+				          { text: '', datafield: 'Edit', columntype: 'button', cellclassname: cellclass, width: '10%',
 				        	  cellsrenderer: function () {
 				        		  return "Edit";
 				        	  },
@@ -581,24 +664,54 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 	function getHTMLToolTip(job) {
 
-		var startDate = getDate(job.starts);
-		var endDate = getDate(job.ends);
-
-		var hours = Math.abs(startDate - endDate) / 3600000;
-		var hourLabel = "hour"; 
-		if(hours>10){
-			hourLabel = "hours";
-		}
-
-		var depends_on = "";
-		for(var z=0; z<job.depends_on.length; z++){
-			if(z==0){
-				depends_on = findIdFeatureFromJobId(job.depends_on[z].id);	
-			}else{
-				depends_on = depends_on + ", " + findIdFeatureFromJobId(job.depends_on[z].id);
+		
+		var start = "";
+		var end= "";
+		
+		var duration ="";
+		if(!isUndefinedOrNull(job.starts) || !isUndefinedOrNull(job.ends)){
+			//start
+			start= getDateASString(job.starts);
+			//end
+			end= getDateASString(job.ends);
+			//duration
+			var startDate = getDate(job.starts);
+			var endDate = getDate(job.ends);
+			var hours = Math.abs(startDate - endDate) / 3600000;
+			var hourLabel = "hour"; 
+			if(hours>10){
+				hourLabel = "hours";
 			}
-
+			duration = ""+ hours + " " + hourLabel;
 		}
+				
+		var depends_on = "";
+		if(job.feature.id==4){
+			//alert("job.feature.id " + job.feature.id)
+			//$scope.releaseFeatures
+		}
+		for(var z=0; z<$scope.releaseFeatures.length; z++){
+			if($scope.releaseFeatures[z].id==job.feature.id){
+				
+				
+				for(var c=0; c<$scope.releaseFeatures[z].depends_on.length; c++){
+					if(c==0){
+						depends_on = $scope.releaseFeatures[z].depends_on[c].name + "-" + $scope.releaseFeatures[z].depends_on[c].id + "(Id)";
+					}
+					else{
+						depends_on = depends_on + ", " + $scope.releaseFeatures[z].depends_on[c].name + "-" + $scope.releaseFeatures[z].depends_on[c].id + "(Id)";
+					}
+				}
+			}
+		}
+//		for(var z=0; z<job.depends_on.length; z++){
+//			if(z==0){
+//				depends_on = findIdFeatureFromJobId(job.depends_on[z].id);	
+//			}else{
+//				depends_on = depends_on + ", " + findIdFeatureFromJobId(job.depends_on[z].id);
+//			}
+//
+//		}
 		//tooltip
 		var result = "<div>" +
 		"<table class='tooltip_table'>" +
@@ -610,12 +723,13 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		"<tr>" +
 		"<td>" +
 		"<b>Id:</b> "+ job.feature.id + "<br>" +
-		"<b>Start:</b> "+ getDateASString(job.starts) + "<br>" +
-		"<b>End:</b> "+getDateASString(job.ends) + "<br>" +
-		"<b>Duration:</b> " + hours+ " " + hourLabel + "<br>" +
+		"<b>Start:</b> "+ start + "<br>" +
+		"<b>End:</b> "+ end + "<br>" +
+		"<b>Duration:</b> " + duration + "<br>" +
 		"<b>Effort:</b> " + job.feature.effort + "<br>" +
 		"<b>Priority:</b> "+ job.feature.priority + "<br>" +
 		"<b>Depends on:</b> "+ depends_on + "<br>" +
+		"<b>Required skills:</b> "+ job.feature.my_requiredSkills + "<br>" +
 		"</td>" +
 		"</tr>" +
 		"</table>" +
@@ -707,6 +821,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	}
 
 	function drawFeatureDependencies(){
+		
 		var indexColorResource = 0;
 		var lastIdResource = -1;
 
@@ -715,8 +830,9 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 		var nodeDataSet = [];
 		var edgeDataSet = [];
-		var jobs = $scope.plan.jobs;
-
+		//var jobs = $scope.plan.jobs;
+		//only to test
+		var jobs = $scope.planJqxgrid.jobs;
 
 		var arrayFeaturesIds =[];
 		var index = 0;
@@ -725,11 +841,11 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 			if(job.depends_on.length>0){
 				arrayFeaturesIds[index] = job.feature.id;
 				index++;
-					for(var j = 0; j< job.depends_on.length; j++){
-						var feature =  job.depends_on[j];
-						arrayFeaturesIds[index] = feature.feature_id;
-						index++;
-					}
+				for(var j = 0; j< job.depends_on.length; j++){
+					var feature =  job.depends_on[j];
+					arrayFeaturesIds[index] = feature.feature_id;
+					index++;
+				}
 			}
 		}	
 
@@ -745,16 +861,21 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				node.label = job.feature.id;
 				node.title = getHTMLToolTip(job);
 
-				if(lastIdResource == -1){
-					lastIdResource = job.resource.id;
-				}
+				if(!isUndefinedOrNull(job.resource) && !isUndefinedOrNull(job.resource.id) ){
+					if(lastIdResource == -1){
+						lastIdResource = job.resource.id;
+					}
 
-				if(lastIdResource != job.resource.id){
-					indexColorResource ++;
-					lastIdResource = job.resource.id;
-				}
+					if(lastIdResource != job.resource.id){
+						indexColorResource ++;
+						lastIdResource = job.resource.id;
+					}
 
-				node.color = arrayColors[indexColorResource];
+					node.color = arrayColors[indexColorResource];
+				}else{
+					node.color = 'gray';
+				}
+				
 				nodeDataSet[indexNode] = node;
 
 				for(var j =0; j< job.depends_on.length; j++){
@@ -763,6 +884,9 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 					edge.from = job.depends_on[j].feature_id;
 					edge.to = job.feature.id;
 					edge.color = 'gray';
+					if(isUndefinedOrNull(job.resource) || isUndefinedOrNull(job.resource.id) ){
+						edge.dashes= true;
+					}
 					edgeDataSet[indexEdge] = edge;
 					indexEdge ++;
 				}
@@ -829,7 +953,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 	function findIdFeatureFromJobId(jobId) {
 		var jobs = $scope.plan.jobs;
-
 		//for(var i = jobs.length-1; i>=0; i--){
 		for(var i = 0; i< jobs.length; i++){
 			var job = jobs[i];
@@ -839,6 +962,10 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		}
 		return -1;
 	}
+	
+	
+	
+	
 
 	function getDateASString(dateAsString) {
 		var res = dateAsString.split("T");
@@ -865,6 +992,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		}
 		return false;
 	}
+	
 	
 	/**
 	 * start point function

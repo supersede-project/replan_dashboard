@@ -477,6 +477,12 @@ app.controllerProvider.register('replan-release', ['$scope', '$location', '$http
 		
 		$scope.arraySkill_to_add = [];
 		var items = $("#skill").jqxDropDownList('getCheckedItems');
+		if(items.length ==0){
+			$scope.skillRequired = 'has-error';
+        	$scope.skillRequiredBln = true;
+        	$scope.featureForm.$invalid = true;
+        	return;
+		}
 		for(var i = 0; i< items.length ; i++){
 			$scope.arraySkill_to_add[i] = items[i].value;
 		}
