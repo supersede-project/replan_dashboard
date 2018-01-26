@@ -235,7 +235,7 @@ app.controllerProvider.register('replan-release', ['$scope', '$location', '$http
 			displayMember: "name",
 			valueMember: "id",
 			checkboxes: true,
-			//enableSelection: false,
+			enableSelection: true,
 			width: '93%',
 			height: '15',
 			source: $scope.dataAdapterSkillDropDownList
@@ -254,9 +254,14 @@ app.controllerProvider.register('replan-release', ['$scope', '$location', '$http
 			}
 		}
 
+		// to solve the problem (on checkChange list checked element element are 0 )
+		//$(window).trigger('resize');
+		//$("#skill").redraw();
 	});
 	
     $("#skill").on('checkChange', function (event){
+    	
+    	var args = event.args;
     	var items = $("#skill").jqxDropDownList('getCheckedItems'); 
         if(items.length == 0){
         	$scope.skillRequired = 'has-error';
@@ -266,7 +271,10 @@ app.controllerProvider.register('replan-release', ['$scope', '$location', '$http
         	$scope.skillRequired = '';
         	$scope.skillRequiredBln = false;
         	$scope.featureForm.$invalid = false;
+        	
         }
+        //to solve the problem: to slow to update the DOM
+        $scope.$apply();
     		
 	});
     
