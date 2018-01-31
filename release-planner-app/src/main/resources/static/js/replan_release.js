@@ -273,9 +273,11 @@ app.controllerProvider.register('replan-release', ['$scope', '$location', '$http
         	$scope.featureForm.$invalid = false;
         	
         }
-        //to solve the problem: to slow to update the DOM
-        $scope.$apply();
-    		
+       //to solve the problem: to slow to update the DOM
+        if(!$scope.$$phase) {
+        	$scope.$apply();
+    	}
+
 	});
     
 	appendReplaneWindows = function(type, message) {
@@ -729,7 +731,15 @@ app.controllerProvider.register('replan-release', ['$scope', '$location', '$http
 
 	//cancel button Project
 	$scope.cancel = function(){
-		$location.path("/release-planner-app/main");
+		
+		if($location.search().from =='plan'){
+			$location.path("/release-planner-app/release_details").search({releaseId: ''+ $location.search().releaseId});
+			
+		}
+		else{
+			$location.path("/release-planner-app/main");	
+		}
+		
 	};
 	
 	/**

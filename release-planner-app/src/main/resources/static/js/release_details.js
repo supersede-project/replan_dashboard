@@ -130,17 +130,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		$rootScope.showViewTable = event.args.checked; 
 		$scope.$apply();
 	});
-	
-	
-	
-	function isEven(n) {
-		return n % 2 == 0;
-	}
-	
-	function isUndefinedOrNull(obj){
-        return !angular.isDefined(obj) || obj===null;
-    }
-	
+
 	//var deadLineRelease = new Date($scope.release.deadline);
 	$scope.getStringSUPERSEDEDate = function (supersedeDateAsString){
 		if(!isUndefinedOrNull(supersedeDateAsString)){
@@ -151,8 +141,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		return "";
 		
 	}
-	//name -> y
-	//1472688000000 -> x
+
 	$scope.startPoint = function (releaseId) {
 
 		$scope.getReleaseFeatures(releaseId)
@@ -289,29 +278,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		);
 	}
 
-
-	//2017-05-17T11:00:00.000Z
-	function getDate(supersedeDateAsString){
-		var res = supersedeDateAsString.split("T");
-		var dateAsString = res[0];
-		var dateAsStrings = dateAsString.split("-");
-		var year = dateAsStrings[0];
-		var mounth = dateAsStrings[1];
-		var day = dateAsStrings[2];
-
-		var timeStampAsString = res[1];
-		var timeStampAsStrings = res[1].split(".");
-		var timeAsString = timeStampAsStrings[0];
-		var timeAsStrings = timeAsString.split(":");
-		var hours = timeAsStrings[0];
-		var minutes = timeAsStrings[1];
-		//year, month, day, hour, minute, second, and millisecond,
-		//mounth
-		var mounth2 = mounth-1;
-		var startDate = new Date(parseInt(year),parseInt(mounth2),parseInt(day),parseInt(hours),parseInt(minutes));
-		return startDate;
-	}
-
 	function addPropertiesTOPlanJqxgrid() {
 
 		for(var i = 0; i<$scope.planJqxgrid.jobs.length; ++i){ 
@@ -344,6 +310,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 			job.my_scheduled = true;
 
 		}
+
 		//add features not scheduled as job 
 		for(var i = 0; i<$scope.releaseFeatures.length; ++i){
 			//if false -> add
@@ -529,8 +496,8 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				        			  var featureId = $scope.planJqxgrid.jobs[row].feature.id
 
 				        			  $rootScope.$apply(function() {
-				        				  $location.path("/release-planner-app/replan_release").search({featureId: featureId, releaseId: $scope.release.id });
-				        				  console.log($location.path());
+				        				  $location.path("/release-planner-app/replan_release").search({featureId: featureId, releaseId: $scope.release.id, from: 'plan' });
+				        				  //console.log($location.path());
 				        			  });
 				        		  }
 				        	  }
@@ -543,24 +510,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 	};
 
-	function isFeature(textContent){
-
-		for(var i=0; i< $scope.plan.jobs.length; i++){
-			if(""+$scope.plan.jobs[i].feature.id ==  textContent){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	function is_in_featuresTORemove(id) {
-		for(var i = 0; i<$scope.featuresTORemove.length; ++i){ 
-			if($scope.featuresTORemove[i]== id){
-				return true;
-			}
-		}
-		return false;
-	}
 
 	$scope.accept = function() {
 
@@ -614,49 +563,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	};
 
 	/**
-	 * Help methods
-	 */
-	function getDates(startDate, stopDate) {
-		var dateArray = new Array();
-		var currentDate = startDate;
-		while (currentDate <= stopDate) {
-			var date = new Date (currentDate);
-			date.setHours(0,0,0,0);
-			dateArray.push( date );
-			currentDate = currentDate.addDays(1);
-		}
-		return dateArray;
-	}
-
-	Date.prototype.addDays = function(days) {
-		var dat = new Date(this.valueOf())
-		dat.setDate(dat.getDate() + days);
-		return dat;
-	}
-
-	//http://stackoverflow.com/questions/11246758/how-to-get-unique-values-in-an-array
-	//HOW TO 
-	//var duplicates = [1,3,4,2,1,2,3,8];
-	//var uniques = duplicates.unique(); // result = [1,3,4,2,8]
-	Array.prototype.contains = function(v) {
-		for(var i = 0; i < this.length; i++) {
-			if(this[i] === v) return true;
-		}
-		return false;
-	};
-
-	Array.prototype.unique = function() {
-		var arr = [];
-		for(var i = 0; i < this.length; i++) {
-			if(!arr.contains(this[i])) {
-				arr.push(this[i]);
-			}
-		}
-		return arr; 
-	}
-
-
-	/**
 	 * Google and visjs chart functions
 	 */
 
@@ -664,7 +570,6 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 
 	function getHTMLToolTip(job) {
 
-		
 		var start = "";
 		var end= "";
 		
@@ -686,10 +591,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		}
 				
 		var depends_on = "";
-		if(job.feature.id==4){
-			//alert("job.feature.id " + job.feature.id)
-			//$scope.releaseFeatures
-		}
+	
 		for(var z=0; z<$scope.releaseFeatures.length; z++){
 			if($scope.releaseFeatures[z].id==job.feature.id){
 				
@@ -704,14 +606,7 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 				}
 			}
 		}
-//		for(var z=0; z<job.depends_on.length; z++){
-//			if(z==0){
-//				depends_on = findIdFeatureFromJobId(job.depends_on[z].id);	
-//			}else{
-//				depends_on = depends_on + ", " + findIdFeatureFromJobId(job.depends_on[z].id);
-//			}
-//
-//		}
+
 		//tooltip
 		var result = "<div>" +
 		"<table class='tooltip_table'>" +
@@ -812,11 +707,9 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 			
 			//3.1 draw
 			timelineChart.draw(dataTable, options);
-		}else{
-		
+		}
+		else{
 			$scope.showTimeline_chart_no_resources_available = true;
-			
-			
 		}
 	}
 
@@ -941,16 +834,17 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 		if(nodeDataSet.length>0){
 			$scope.showMynetwork = true;
 			//5.initialize your network!
-			var network = new vis.Network(container, data, options);
-			
-		}else{
-			$scope.showMynetwork_no_dependencies_available = true;
-			
+			var network = new vis.Network(container, data, options);	
 		}
-		
+		else{
+			$scope.showMynetwork_no_dependencies_available = true;	
+		}
 	}
 	
-
+	/**
+	 * Help methods
+	 */
+	
 	function findIdFeatureFromJobId(jobId) {
 		var jobs = $scope.plan.jobs;
 		//for(var i = jobs.length-1; i>=0; i--){
@@ -964,8 +858,31 @@ app.controllerProvider.register('release-details', ['$scope', '$location', '$htt
 	}
 	
 	
+	//example of supersedeDateAsString 2017-05-17T11:00:00.000Z
+	function getDate(supersedeDateAsString){
+		var res = supersedeDateAsString.split("T");
+		var dateAsString = res[0];
+		var dateAsStrings = dateAsString.split("-");
+		var year = dateAsStrings[0];
+		var mounth = dateAsStrings[1];
+		var day = dateAsStrings[2];
+
+		var timeStampAsString = res[1];
+		var timeStampAsStrings = res[1].split(".");
+		var timeAsString = timeStampAsStrings[0];
+		var timeAsStrings = timeAsString.split(":");
+		var hours = timeAsStrings[0];
+		var minutes = timeAsStrings[1];
+		//year, month, day, hour, minute, second, and millisecond,
+		//mounth
+		var mounth2 = mounth-1;
+		var startDate = new Date(parseInt(year),parseInt(mounth2),parseInt(day),parseInt(hours),parseInt(minutes));
+		return startDate;
+	}
 	
-	
+	function isUndefinedOrNull(obj){
+        return !angular.isDefined(obj) || obj===null;
+    }
 
 	function getDateASString(dateAsString) {
 		var res = dateAsString.split("T");

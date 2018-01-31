@@ -617,12 +617,13 @@ app.controllerProvider.register('release-utilities', ['$scope', '$location', '$h
 	}
 	$scope.cancel = function(){
 		
-		if($scope.isUpdate){
-			$location.path("/release-planner-app/release_details").search({releaseId: ''+$scope.releases[i].id });
-		}
-		else{
-			$location.path("/release-planner-app/main");
-		}
+//		if($scope.isUpdate){
+//			$location.path("/release-planner-app/release_details").search({releaseId: ''+$scope.releases[i].id });
+//		}
+//		else{
+//			$location.path("/release-planner-app/main");
+//		}
+		$location.path("/release-planner-app/main");
 	};
 	
 	$scope.remove = function(){
